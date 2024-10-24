@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UploadFileRequest;
 use App\Models\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -47,27 +48,10 @@ class FilesController extends Controller
     /**
      * Upload files to the database.
      */
-    public function upload(Request $request)
+    public function upload(UploadFileRequest $request)
     {
 
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'dxf_path' => 'required|file|max:2048',
-            'picture_path' => 'required|image|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        // $dxfPath = $request->file('dxf_path')->store('dxf_files', 'public');
-        // $imagePath = $request->file('picture_path')->store('image_files', 'public');
-
-        // Force the correct extension for the DXF file
         $dxfFile = $request->file('dxf_path');
         $dxfFileName = time() . '.dxf'; // Force .dxf extension
         $dxfPath = $dxfFile->storeAs('dxf_files', $dxfFileName, 'public');
@@ -82,6 +66,7 @@ class FilesController extends Controller
             'picture_path' => url(Storage::url($imagePath)),
         ]);
 
+        //Return a json response to the frontend
         return response()->json([
             'message' => 'Files Uploded Successfully',
             'files' => $file
