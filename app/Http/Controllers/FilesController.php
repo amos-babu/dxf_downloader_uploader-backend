@@ -73,10 +73,36 @@ class FilesController extends Controller
         ], 201);
     }
 
-    public function download($id)
+    /**
+     * Download dxf files from the database.
+     */
+
+    public function downloadDxf($id)
     {
         $file = File::findOrFail($id);
         $filePath = $file->dxf_path;
+        dd($filePath, Storage::exists($filePath));
+
+
+        if (Storage::exists($filePath)) {
+            return Storage::download($filePath);
+        }
+
+        return response()->json([
+            'message' => 'File not found!',
+        ], 404);
+    }
+
+    /**
+     * Download image files from the database.
+     */
+
+    public function downloadImage($id)
+    {
+        $file = File::findOrFail($id);
+        $filePath = $file->picture_path;
+
+        dd($filePath, Storage::exists($filePath));
 
         if (Storage::exists($filePath)) {
             return Storage::download($filePath);
