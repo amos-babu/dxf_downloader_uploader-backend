@@ -74,6 +74,22 @@ class FilesController extends Controller
     }
 
     /**
+     * Search dxf files from the database.
+     */
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $result = File::where('title', 'like', '%' . $search . '%')
+            ->orWhere('description', 'like', '%' . $search . '%')
+            ->get();
+
+        return response()->json([
+            'results' => $result
+        ]);
+    }
+
+    /**
      * Download dxf files from the database.
      */
 
@@ -81,8 +97,6 @@ class FilesController extends Controller
     {
         $file = File::findOrFail($id);
         $filePath = $file->dxf_path;
-        dd($filePath, Storage::exists($filePath));
-
 
         if (Storage::exists($filePath)) {
             return Storage::download($filePath);
@@ -101,8 +115,6 @@ class FilesController extends Controller
     {
         $file = File::findOrFail($id);
         $filePath = $file->picture_path;
-
-        dd($filePath, Storage::exists($filePath));
 
         if (Storage::exists($filePath)) {
             return Storage::download($filePath);

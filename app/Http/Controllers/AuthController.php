@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
-use Illuminate\Container\Attributes\Auth;
-use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Request;
 
 class AuthController extends Controller
 {
@@ -45,7 +45,7 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request->email)->firstOrFail();
-        $token = $user->createToken('auth_token')->plainTextToken();
+        $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
             'message' => 'Login Success!',
             'token' => $token,
@@ -56,11 +56,25 @@ class AuthController extends Controller
     /**
      * Delete the logged in user session.
      */
-    public function logout(User $user)
+    // public function logout(User $user)
+    // {
+    //     auth()->user()->tokens()->delete();
+    //     return response()->json([
+    //         'message' => 'You are logged out!'
+    //     ]);
+    // }
+
+    public function logout(Request $request)
     {
-        auth()->user()->tokens()->delete();
+        if ($user = $request->user()) {
+            $user->tokens()->delete();
+            return response()->json([
+                'message' => 'You are logged out!'
+            ]);
+        }
+
         return response()->json([
-            'message' => 'You are logged out!'
-        ]);
+            'message' => 'No authenticated user found.'
+        ], 400);
     }
 }
