@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/upload_file', [FilesController::class, 'upload']);
-    Route::post('/user', [AuthController::class, 'authenticatedUser']);
+    Route::get('/user', [AuthController::class, 'authenticatedUser']);
 
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    // Route::get('/user', function (Request $request) {
+    //     return $request->user();
+    // });
 });
 
 

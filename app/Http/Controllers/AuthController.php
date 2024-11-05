@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
+use App\Http\Resources\AuthResource;
 use App\Http\Resources\RegisterResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -76,6 +77,7 @@ class AuthController extends Controller
 
     public function authenticatedUser(Request $request)
     {
-        return response()->json($request->user());
+        $authUser = $request->user();
+        return new AuthResource($authUser);
     }
 }
