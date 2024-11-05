@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UploadFileRequest;
+use App\Http\Resources\FileDisplayResource;
+use App\Http\Resources\FileResource;
 use App\Models\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -16,10 +18,9 @@ class FilesController extends Controller
      */
     public function index()
     {
-        $file = File::all();
-        return response()->json([
-            'file' => $file,
-        ], 200);
+        $file = File::select('id', 'title', 'picture_path')
+            ->get();
+        return FileResource::collection($file);
     }
 
     /**
@@ -27,22 +28,10 @@ class FilesController extends Controller
      */
     public function fileDisplay($id)
     {
-        // $file = File::findOrFail($id);
-        // return response()->json([
-        //     'file' => $file,
-        // ], 200);
+        $file = File::select('id', 'title', 'description', 'picture_path', 'created_at')
+            ->findOrFail($id);
 
-        $file = File::findOrFail($id);
-        return response()->json([
-            'file' => [
-                'id' => $file->id,
-                'title' => $file->title,
-                'description' => $file->description,
-                'dxf_path' => $file->dxf_path,
-                'picture_path' => $file->picture_path,
-                'created_at' => $file->created_at->diffForHumans(),
-            ],
-        ], 200);
+        return new FileDisplayResource($file);
     }
 
     /**
@@ -99,7 +88,8 @@ class FilesController extends Controller
         $filePath = $file->dxf_path;
 
         if (Storage::exists($filePath)) {
-            return Storage::download($filePath);
+            // return Storage::download($filePath);
+            return response()->download($filePath);
         }
 
         return response()->json([
@@ -114,10 +104,11 @@ class FilesController extends Controller
     public function downloadImage($id)
     {
         $file = File::findOrFail($id);
-        $filePath = $file->picture_path;
+        $filePath = $file->dxf_path;
 
         if (Storage::exists($filePath)) {
-            return Storage::download($filePath);
+            // return Storage::download($filePath);
+            return response()->download($filePath);
         }
 
         return response()->json([

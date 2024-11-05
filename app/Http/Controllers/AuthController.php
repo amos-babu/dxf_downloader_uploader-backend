@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
+use App\Http\Resources\RegisterResource;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Request;
+// use Illuminate\Support\Facades\Request;
 
 class AuthController extends Controller
 {
@@ -25,8 +27,9 @@ class AuthController extends Controller
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
-            'user' => $user,
+            'user' => new RegisterResource($user),
             'token' => $token,
             'token_type' => 'Bearer'
         ]);
@@ -56,13 +59,6 @@ class AuthController extends Controller
     /**
      * Delete the logged in user session.
      */
-    // public function logout(User $user)
-    // {
-    //     auth()->user()->tokens()->delete();
-    //     return response()->json([
-    //         'message' => 'You are logged out!'
-    //     ]);
-    // }
 
     public function logout(Request $request)
     {
@@ -76,5 +72,10 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'No authenticated user found.'
         ], 400);
+    }
+
+    public function authenticatedUser(Request $request)
+    {
+        return response()->json($request->user());
     }
 }
