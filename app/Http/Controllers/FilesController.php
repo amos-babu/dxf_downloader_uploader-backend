@@ -49,6 +49,7 @@ class FilesController extends Controller
         $imagePath = $request->file('picture_path')->store('image_files', 'public');
 
         $file = File::create([
+            'user_id' => auth()->id(),
             'title' => $request->title,
             'description' => $request->description,
             'dxf_path' => url(Storage::url($dxfPath)),
