@@ -19,7 +19,8 @@ class AuthResource extends JsonResource
             'email' => $this->email,
             'username' => $this->username,
             'bio' => $this->bio,
-            'profile_pic_path' => $this->profile_pic_path
+            'profile_pic_path' => $this->profile_pic_path,
+            'files' => CurrentUserFilesResource::collection($this->whenLoaded('files')),
         ];
     }
 }

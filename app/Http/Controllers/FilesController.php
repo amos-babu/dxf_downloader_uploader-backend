@@ -7,9 +7,8 @@ use App\Http\Resources\FileDisplayResource;
 use App\Http\Resources\FileResource;
 use App\Models\File;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 
 class FilesController extends Controller
 {
@@ -18,8 +17,10 @@ class FilesController extends Controller
      */
     public function index()
     {
-        $file = File::select('id', 'title', 'picture_path')
-            ->get();
+        $file = File::with(['user' => function ($query) {
+            $query->select('id', 'username', 'profile_pic_path');
+        }])->select('id', 'title', 'user_id', 'picture_path')->get();
+
         return FileResource::collection($file);
     }
 
@@ -49,7 +50,7 @@ class FilesController extends Controller
         $imagePath = $request->file('picture_path')->store('image_files', 'public');
 
         $file = File::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'title' => $request->title,
             'description' => $request->description,
             'dxf_path' => url(Storage::url($dxfPath)),

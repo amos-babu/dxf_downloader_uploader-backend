@@ -78,6 +78,8 @@ class AuthController extends Controller
     public function authenticatedUser(Request $request)
     {
         $authUser = $request->user();
+        $authUser->load('files');
+        
         return new AuthResource($authUser);
     }
 }
