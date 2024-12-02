@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class FileResource extends JsonResource
 {
@@ -17,7 +18,7 @@ class FileResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'picture_path' => $this->picture_path,
+            'picture_path' => url(Storage::url($this->picture_path)),
             'user' => new UserResource($this->whenLoaded('user')),
         ];
     }

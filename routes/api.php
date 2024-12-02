@@ -2,8 +2,6 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FilesController;
-use Illuminate\Container\Attributes\Auth;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
@@ -13,6 +11,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'authenticatedUser']);
 });
 
+Route::get('/user_details/{id}', [AuthController::class, 'userDetails']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/retrieve_files', [FilesController::class, 'index']);

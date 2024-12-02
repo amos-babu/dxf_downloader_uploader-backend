@@ -79,7 +79,15 @@ class AuthController extends Controller
     {
         $authUser = $request->user();
         $authUser->load('files');
-        
+
         return new AuthResource($authUser);
+    }
+
+    public function userDetails($id)
+    {
+        $user = User::findOrFail($id);
+        $user->load('files');
+
+        return new AuthResource($user);
     }
 }

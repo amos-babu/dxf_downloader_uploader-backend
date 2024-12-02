@@ -43,7 +43,7 @@ class FilesController extends Controller
 
 
         $dxfFile = $request->file('dxf_path');
-        $dxfFileName = time() . '.dxf'; // Force .dxf extension
+        $dxfFileName = time() . '.dxf';
         $dxfPath = $dxfFile->storeAs('dxf_files', $dxfFileName, 'public');
 
         // Store the image file as usual
@@ -53,8 +53,8 @@ class FilesController extends Controller
             'user_id' => Auth::id(),
             'title' => $request->title,
             'description' => $request->description,
-            'dxf_path' => url(Storage::url($dxfPath)),
-            'picture_path' => url(Storage::url($imagePath)),
+            'dxf_path' => $dxfPath, //relative path
+            'picture_path' => $imagePath,
         ]);
 
         //Return a json response to the frontend
@@ -89,15 +89,33 @@ class FilesController extends Controller
         $file = File::findOrFail($id);
         $filePath = $file->dxf_path;
 
-        if (Storage::exists($filePath)) {
-            // return Storage::download($filePath);
-            return response()->download($filePath);
+        // Construct the full local path to the file in the 'public' disk
+        $localPath = storage_path("app/public/{$filePath}");
+
+        // Check if the file exists in the constructed path
+        if (file_exists($localPath)) {
+            return Storage::download($localPath);
         }
 
+        // Return an error response if the file does not exist
         return response()->json([
-            'message' => 'File not found!',
+            'message' => 'Dxf file not found!',
         ], 404);
     }
+
+    // public function downloadDxf($id)
+    // {
+    //     $file = File::findOrFail($id);
+    //     $filePath = $file->dxf_path;
+
+    //     if (Storage::disk('public')->exists($filePath)) {
+    //         return Storage::disk('public')->download($filePath);
+    //     }
+
+    //     return response()->json([
+    //         'message' => 'Dxf file not found!',
+    //     ], 404);
+    // }
 
     /**
      * Download image files from the database.
@@ -106,15 +124,34 @@ class FilesController extends Controller
     public function downloadImage($id)
     {
         $file = File::findOrFail($id);
-        $filePath = $file->dxf_path;
+        $filePath = $file->picture_path;
 
-        if (Storage::exists($filePath)) {
-            // return Storage::download($filePath);
-            return response()->download($filePath);
+        // Construct the full local path to the file in the 'public' disk
+        $localPath = storage_path("app/public/{$filePath}");
+
+        // Check if the file exists in the constructed path
+        if (file_exists($localPath)) {
+            return Storage::download($localPath);
         }
 
+        // Return an error response if the file does not exist
         return response()->json([
-            'message' => 'File not found!',
+            'message' => 'Image file not found!',
         ], 404);
     }
+
+
+    // public function downloadImage($id)
+    // {
+    //     $file = File::findOrFail($id);
+    //     $filePath = $file->picture_path;
+
+    //     if (Storage::disk('public')->exists($filePath)) {
+    //         return Storage::disk('public')->download($filePath);
+    //     }
+
+    //     return response()->json([
+    //         'message' => 'Image file not found!'
+    //     ], 404);
+    // }
 }

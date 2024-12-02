@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class FileDisplayResource extends JsonResource
 {
@@ -18,7 +19,7 @@ class FileDisplayResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'picture_path' => $this->picture_path,
+            'picture_path' => url(Storage::url($this->picture_path)),
             'created_at' => $this->created_at->diffForHumans(),
         ];
     }
