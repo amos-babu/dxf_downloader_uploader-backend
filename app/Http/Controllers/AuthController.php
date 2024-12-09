@@ -80,7 +80,9 @@ class AuthController extends Controller
         $authUser = $request->user();
         $authUser->load('files');
 
-        return new AuthResource($authUser);
+        return (new AuthResource($authUser))->additional([
+            'can_edit' => true,
+        ]);
     }
 
     public function userDetails($id)
@@ -88,6 +90,8 @@ class AuthController extends Controller
         $user = User::findOrFail($id);
         $user->load('files');
 
-        return new AuthResource($user);
+        return (new AuthResource($user))->additional([
+            'can_edit' => false,
+        ]);
     }
 }

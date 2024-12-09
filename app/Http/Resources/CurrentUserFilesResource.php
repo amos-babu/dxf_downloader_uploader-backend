@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class CurrentUserFilesResource extends JsonResource
 {
@@ -15,7 +16,8 @@ class CurrentUserFilesResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'picture_path' => $this->picture_path
+            'id' => $this->id,
+            'picture_path' => url(Storage::url($this->picture_path))
         ];
     }
 }
