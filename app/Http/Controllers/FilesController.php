@@ -19,7 +19,7 @@ class FilesController extends Controller
     {
         $file = File::with(['user' => function ($query) {
             $query->select('id', 'username', 'profile_pic_path');
-        }])->select('id', 'title', 'user_id', 'picture_path')->get();
+        }])->select('id', 'title', 'user_id', 'picture_path')->latest()->get();
 
         return FileResource::collection($file);
     }
