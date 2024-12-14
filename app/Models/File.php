@@ -10,7 +10,13 @@ class File extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'description',
+        'dxf_path',
+        'picture_path'
+    ];
 
     public function user()
     {

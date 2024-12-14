@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\AuthResource;
 use App\Http\Resources\RegisterResource;
 use App\Models\User;
@@ -73,6 +74,31 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'No authenticated user found.'
         ], 400);
+    }
+
+    public function updateUserProfile(UpdateUserRequest $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'Error' => 'User not found!'
+            ], 401);
+        }
+
+        $validatedData = $request->validated();
+
+        if ($request->hasFile('profile_pic_path')) {
+            $filePath = $request->file('profile_pic_path')->store('profile_pics', 'public');
+            $validatedData['profile_pic_path'] = $filePath;
+        }
+
+        $user->update(array_filter($validatedData));
+
+        return response()->json([
+            'message' => 'Profile updated successfully!',
+            'data' => $user,
+        ]);
     }
 
     public function authenticatedUser(Request $request)
