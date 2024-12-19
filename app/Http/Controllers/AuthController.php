@@ -80,24 +80,20 @@ class AuthController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user) {
-            return response()->json([
-                'Error' => 'User not found!'
-            ], 401);
-        }
+        // Update user details
+        $data = $request->validated();
 
-        $validatedData = $request->validated();
-
+        // Handle profile image upload
         if ($request->hasFile('profile_pic_path')) {
             $filePath = $request->file('profile_pic_path')->store('profile_pics', 'public');
-            $validatedData['profile_pic_path'] = $filePath;
+            $data['profile_pic_path'] = $filePath; // Add file path to update data
         }
 
-        $user->update(array_filter($validatedData));
+        $user->update($data);
 
         return response()->json([
             'message' => 'Profile updated successfully!',
-            'data' => $user,
+            'data' => $user->fresh(), // Fetch latest user data from the database
         ]);
     }
 
