@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UploadFileRequest;
 use App\Http\Resources\FileDisplayResource;
 use App\Http\Resources\FileResource;
+use App\Http\Resources\SearchFilesResource;
 use App\Models\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,14 +66,18 @@ class FilesController extends Controller
 
     public function search(Request $request)
     {
-        $search = $request->input('search');
-        $result = File::where('title', 'like', '%' . $search . '%')
-            ->orWhere('description', 'like', '%' . $search . '%')
+        //search query request from the input
+        $query = $request->input('query');
+
+        $result = File::where('title', 'like', "%{$query}%")
+            ->orWhere('description', 'like', "%{$query}%")
             ->get();
 
-        return response()->json([
-            'results' => $result
-        ]);
+
+        // return response()->json([
+        //     'results' => $result
+        // ]);
+        return SearchFilesResource::collection($result);
     }
 
     /**

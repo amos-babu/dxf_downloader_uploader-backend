@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\AuthResource;
 use App\Http\Resources\RegisterResource;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -28,11 +29,12 @@ class AuthController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token', ['*'], Carbon::now()->addHours(24));
 
         return response()->json([
             'user' => new RegisterResource($user),
-            'token' => $token,
+            'token' => $token->plainTextToken,
+            'token_expires_at' => $token->accessToken->expires_at,
             'token_type' => 'Bearer'
         ]);
     }
@@ -50,10 +52,11 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request->email)->firstOrFail();
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token', ['*'], Carbon::now()->addHours(24));
         return response()->json([
             'message' => 'Login Success!',
-            'token' => $token,
+            'token' => $token->plainTextToken,
+            'token_expires_at' => $token->accessToken->expires_at,
             'token_type' => 'Bearer'
         ]);
     }
@@ -78,10 +81,12 @@ class AuthController extends Controller
 
     public function updateUserProfile(UpdateUserRequest $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
 
         // Update user details
         $data = $request->validated();
+
+        dd($data);
 
         // Handle profile image upload
         if ($request->hasFile('profile_pic_path')) {
@@ -91,6 +96,7 @@ class AuthController extends Controller
 
         $user->update($data);
 
+        // return response
         return response()->json([
             'message' => 'Profile updated successfully!',
             'data' => $user->fresh(), // Fetch latest user data from the database
