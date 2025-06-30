@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\FileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,7 +20,8 @@ class AuthResource extends JsonResource
             'username' => $this->username,
             'bio' => $this->bio,
             'profile_pic_path' => $this->profile_pic_path,
-            'files' => CurrentUserFilesResource::collection($this->whenLoaded('files')),
+            'files' => FileResource::collection($this->whenLoaded('files')) 
+                //CurrentUserFilesResource::collection($this->whenLoaded('files')),
         ];
     }
 }

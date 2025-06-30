@@ -91,7 +91,7 @@ class AuthController extends Controller
         // Handle profile image upload
         if ($request->hasFile('profile_pic_path')) {
             $filePath = $request->file('profile_pic_path')->store('profile_pics', 'public');
-            $data['profile_pic_path'] = $filePath; // Add file path to update data
+            $data['profile_pic_path'] = $filePath; 
         }
 
         $user->update($data);
@@ -99,7 +99,7 @@ class AuthController extends Controller
         // return response
         return response()->json([
             'message' => 'Profile updated successfully!',
-            'data' => $user->fresh(), // Fetch latest user data from the database
+            'data' => $user->fresh(), 
         ]);
     }
 
