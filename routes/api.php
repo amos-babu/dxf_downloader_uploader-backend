@@ -16,6 +16,7 @@ Route::get('/user_details/{id}', [AuthController::class, 'userDetails']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/retrieve_files', [FilesController::class, 'index']);
+Route::get('/similar_files/{id}', FilesController::class, 'displaySimilarFiles');
 Route::get('/search', [FilesController::class, 'search']);
 Route::get('/file_display/{id}', [FilesController::class, 'fileDisplay']);
 Route::get('/download_dxf/{id}', [FilesController::class, 'downloadDxf']);

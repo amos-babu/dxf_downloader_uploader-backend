@@ -24,6 +24,11 @@ class FilesController extends Controller
         return FileResource::collection($file);
     }
 
+    public function displaySimilarFiles($id, ImageProcessing $imageProcess)
+    {
+        $file = File::select('picture_path')->findOrFail($id);
+    }
+
     /**
      * Display single files from the database.
      */
@@ -41,7 +46,7 @@ class FilesController extends Controller
     public function upload(UploadFileRequest $request)
     {
         $dxfFile = $request->file('dxf_path');
-        $dxfFileName = time() . '.dxf';
+        $dxfFileName = time().'.dxf';
         $dxfPath = $dxfFile->storeAs('dxf_files', $dxfFileName, 'public');
 
         $imagePath = $request->file('picture_path')->store('image_files', 'public');
@@ -56,23 +61,21 @@ class FilesController extends Controller
 
         return response()->json([
             'message' => 'Files Uploded Successfully',
-            'files' => $file
+            'files' => $file,
         ], 201);
     }
 
     /**
      * Search dxf files from the database.
      */
-
     public function search(Request $request)
     {
-        //search query request from the input
+        // search query request from the input
         $query = $request->input('query');
 
         $result = File::where('title', 'like', "%{$query}%")
             ->orWhere('description', 'like', "%{$query}%")
             ->get();
-
 
         // return response()->json([
         //     'results' => $result
@@ -83,7 +86,6 @@ class FilesController extends Controller
     /**
      * Download dxf files from the database.
      */
-
     public function downloadDxf($id)
     {
         $file = File::findOrFail($id);
@@ -102,7 +104,6 @@ class FilesController extends Controller
     /**
      * Download image files from the database.
      */
-
     public function downloadImage($id)
     {
         $file = File::findOrFail($id);
