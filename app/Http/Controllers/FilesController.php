@@ -7,6 +7,7 @@ use App\Http\Resources\FileDisplayResource;
 use App\Http\Resources\FileResource;
 use App\Http\Resources\SearchFilesResource;
 use App\Models\File;
+use App\Services\ImageProcessing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,7 +26,7 @@ class FilesController extends Controller
     public function displaySimilarFiles($id, ImageProcessing $imageProcess)
     {
         $file = File::select('picture_path')->findOrFail($id);
-        $imageProcess->similarImages($file);
+        $imageProcess->similarImages($file->picture_path);
     }
 
     // Display single files from the database.
