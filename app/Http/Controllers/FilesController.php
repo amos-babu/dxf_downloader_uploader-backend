@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class FilesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Display a listing of the resource.
     public function index()
     {
         $file = File::with(['user' => function ($query) {
@@ -27,22 +25,20 @@ class FilesController extends Controller
     public function displaySimilarFiles($id, ImageProcessing $imageProcess)
     {
         $file = File::select('picture_path')->findOrFail($id);
+        $imageProcess->similarImages($file);
     }
 
-    /**
-     * Display single files from the database.
-     */
+    // Display single files from the database.
     public function fileDisplay($id)
     {
-        $file = File::with('user')->select('id', 'user_id', 'title', 'description', 'picture_path', 'created_at')
+        $file = File::with('user')
+            ->select('id', 'user_id', 'title', 'description', 'picture_path', 'created_at')
             ->findOrFail($id);
 
         return new FileDisplayResource($file);
     }
 
-    /**
-     * Upload files to the database.
-     */
+    // Upload files to the database.
     public function upload(UploadFileRequest $request)
     {
         $dxfFile = $request->file('dxf_path');
@@ -65,9 +61,7 @@ class FilesController extends Controller
         ], 201);
     }
 
-    /**
-     * Search dxf files from the database.
-     */
+    // Search dxf files from the database. Return a collection
     public function search(Request $request)
     {
         // search query request from the input
@@ -77,15 +71,10 @@ class FilesController extends Controller
             ->orWhere('description', 'like', "%{$query}%")
             ->get();
 
-        // return response()->json([
-        //     'results' => $result
-        // ]);
         return SearchFilesResource::collection($result);
     }
 
-    /**
-     * Download dxf files from the database.
-     */
+    // Download dxf files from the database.
     public function downloadDxf($id)
     {
         $file = File::findOrFail($id);
@@ -101,9 +90,7 @@ class FilesController extends Controller
         ], 404);
     }
 
-    /**
-     * Download image files from the database.
-     */
+    //  Download image files from the database.
     public function downloadImage($id)
     {
         $file = File::findOrFail($id);

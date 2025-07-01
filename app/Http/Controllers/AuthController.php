@@ -12,21 +12,19 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+
 // use Illuminate\Support\Facades\Request;
 
 class AuthController extends Controller
 {
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Store a newly created user in the database
     public function register(RegisterUserRequest $request)
     {
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'username' => $request->username,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
 
         $token = $user->createToken('auth_token', ['*'], Carbon::now()->addHours(24));
@@ -35,17 +33,15 @@ class AuthController extends Controller
             'user' => new RegisterResource($user),
             'token' => $token->plainTextToken,
             'token_expires_at' => $token->accessToken->expires_at,
-            'token_type' => 'Bearer'
+            'token_type' => 'Bearer',
         ]);
     }
 
-    /**
-     * Compare the data entered and the database login the user.
-     */
+    // Compare the data entered and the database login of the user.
     public function login(LoginUserRequest $request, User $user)
     {
         $credentials = $request->only('email', 'password');
-        if (!Auth::attempt($credentials)) {
+        if (! Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Authentication Failed!',
             ], 401);
@@ -53,32 +49,32 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->firstOrFail();
         $token = $user->createToken('auth_token', ['*'], Carbon::now()->addHours(24));
+
         return response()->json([
             'message' => 'Login Success!',
             'token' => $token->plainTextToken,
             'token_expires_at' => $token->accessToken->expires_at,
-            'token_type' => 'Bearer'
+            'token_type' => 'Bearer',
         ]);
     }
 
-    /**
-     * Delete the logged in user session.
-     */
-
+    // Delete the logged in user session.
     public function logout(Request $request)
     {
         if ($user = $request->user()) {
             $user->tokens()->delete();
+
             return response()->json([
-                'message' => 'You are logged out!'
+                'message' => 'You are logged out!',
             ]);
         }
 
         return response()->json([
-            'message' => 'No authenticated user found.'
+            'message' => 'No authenticated user found.',
         ], 400);
     }
 
+    // Update user credentials
     public function updateUserProfile(UpdateUserRequest $request)
     {
         $user = User::find(Auth::id());
@@ -91,7 +87,7 @@ class AuthController extends Controller
         // Handle profile image upload
         if ($request->hasFile('profile_pic_path')) {
             $filePath = $request->file('profile_pic_path')->store('profile_pics', 'public');
-            $data['profile_pic_path'] = $filePath; 
+            $data['profile_pic_path'] = $filePath;
         }
 
         $user->update($data);
@@ -99,10 +95,11 @@ class AuthController extends Controller
         // return response
         return response()->json([
             'message' => 'Profile updated successfully!',
-            'data' => $user->fresh(), 
+            'data' => $user->fresh(),
         ]);
     }
 
+    // Currently logged-in user
     public function authenticatedUser(Request $request)
     {
         $authUser = $request->user();
@@ -113,6 +110,7 @@ class AuthController extends Controller
         ]);
     }
 
+    // User details for the user with the id
     public function userDetails($id)
     {
         $user = User::findOrFail($id);
