@@ -26,7 +26,8 @@ class FilesController extends Controller
     public function displaySimilarFiles($id, ImageProcessing $imageProcess)
     {
         $file = File::select('picture_path')->findOrFail($id);
-        $imageProcess->similarImages($file->picture_path);
+        $similarSortedImages = $imageProcess->similarImages($file->picture_path);
+        return FileResource::collection($similarSortedImages);
     }
 
     // Display single files from the database.
