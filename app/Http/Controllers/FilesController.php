@@ -18,7 +18,7 @@ class FilesController extends Controller
     {
         $file = File::with(['user' => function ($query) {
             $query->select('id', 'username', 'profile_pic_path');
-        }])->select('id', 'title', 'user_id', 'picture_path')->latest()->get();
+        }])->select('id', 'title', 'user_id', 'picture_path')->latest()->paginate(6);
 
         return FileResource::collection($file);
     }

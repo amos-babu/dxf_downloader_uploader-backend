@@ -19,7 +19,8 @@ class FileResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'picture_path' => url(Storage::url($this->picture_path)),
-            'user' => new UserResource($this->whenLoaded('user')),
+            // 'user' => $this->when($this->user, new UserResource($this->user)),
+            'user' => new UserResource($this->whenLoaded('user'))
         ];
     }
 }

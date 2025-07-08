@@ -27,8 +27,7 @@ class ImageProcessing
             $comparePath = storage_path("app/public/{$file->picture_path}");
 
             if (!file_exists($comparePath)) {
-                dd("Missing File: ". $comparePath);
-                // Log::warning("Missing File: ". $comparePath);
+                Log::warning("Missing File: ". $comparePath);
                 continue;
             }
             try {
@@ -42,8 +41,7 @@ class ImageProcessing
                 ];
 
             } catch (\Exception $e) {
-                dd('Error: '.$e->getMessage());
-                // Log::error("Hashing Error: ". $e->getMessage());
+                Log::error("Hashing Error: ". $e->getMessage());
             }
         }
 
