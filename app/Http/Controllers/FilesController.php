@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UploadFileRequest;
 use App\Http\Resources\FileDisplayResource;
 use App\Http\Resources\FileResource;
+use App\Http\Resources\PaginateFileCollection;
+use App\Http\Resources\PaginateFileResource;
 use App\Http\Resources\SearchFilesResource;
 use App\Models\File;
 use App\Services\ImageProcessing;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
 class FilesController extends Controller
@@ -20,14 +23,26 @@ class FilesController extends Controller
             $query->select('id', 'username', 'profile_pic_path');
         }])->select('id', 'title', 'user_id', 'picture_path')->latest()->paginate(6);
 
-        return FileResource::collection($file);
+        return new PaginateFileCollection($file);
     }
 
-    public function displaySimilarFiles($id, ImageProcessing $imageProcess)
+    public function displaySimilarFiles($id, ImageProcessing $imageProcess, Request $request)
     {
         $file = File::select('picture_path')->findOrFail($id);
         $similarSortedImages = $imageProcess->similarImages($file->picture_path);
-        return FileResource::collection($similarSortedImages);
+
+        $perPage = 6;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $currentPageItems = $similarSortedImages->slice(($currentPage - 1 ) * $perPage, $perPage)->values();
+        $paginatedFiles = new LengthAwarePaginator(
+            $currentPageItems,
+            $similarSortedImages->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return new PaginateFileCollection($paginatedFiles);
     }
 
     // Display single files from the database.
