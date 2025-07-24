@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UploadFileRequest;
 use App\Http\Resources\FileDisplayResource;
-use App\Http\Resources\FileResource;
 use App\Http\Resources\PaginateFileCollection;
-use App\Http\Resources\PaginateFileResource;
 use App\Http\Resources\SearchFilesResource;
 use App\Models\File;
 use App\Services\ImageProcessing;
