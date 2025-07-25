@@ -11,7 +11,6 @@ class ImageProcessing
 {
     public function similarImages($image)
     {
-        $files = File::all();
         $hasher = new ImageHash(new DifferenceHash());
         $imagePath = storage_path("app/public/{$image}");
 
@@ -23,7 +22,8 @@ class ImageProcessing
 
         $results = [];
 
-        foreach($files as $file){
+        File::chunk(5, function($files) use ($hasher, $targetHash, &$results){
+            foreach($files as $file){
             $comparePath = storage_path("app/public/{$file->picture_path}");
 
             if (!file_exists($comparePath)) {
@@ -44,6 +44,8 @@ class ImageProcessing
                 Log::error("Hashing Error: ". $e->getMessage());
             }
         }
+        });
+
 
         usort($results, function($a, $b) {
             return $a['distance'] <=> $b['distance'];
