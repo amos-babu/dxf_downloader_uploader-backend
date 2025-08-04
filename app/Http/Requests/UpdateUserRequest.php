@@ -24,11 +24,14 @@ class UpdateUserRequest extends FormRequest
     {
             return [
                 'name' => ['nullable', 'string', 'max:255'],
-                'username' => ['nullable', 'string', 'max:255', 'unique:users,username' . Auth::id()],
+                'username' => [
+                    'nullable',
+                    'string',
+                    'max:255',
+                    // Rule::uniqu
+                    'unique:users,username' . Auth::id()],
                 'bio' => ['nullable', 'string', 'max:255'],
                 'profile_pic_path' => ['nullable', 'image', 'max:2048']
             ];
-
-
     }
 }

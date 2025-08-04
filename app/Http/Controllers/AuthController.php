@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Storage;
 // use Illuminate\Support\Facades\Request;
 
 class AuthController extends Controller
@@ -79,14 +79,22 @@ class AuthController extends Controller
     {
         $user = User::find(Auth::id());
 
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
         // Update user details
         $data = $request->validated();
 
-        // dd($data);
+        // dd($user);
         // Handle profile image upload
         if ($request->hasFile('profile_pic_path')) {
-            $filePath = $request->file('profile_pic_path')->store('profile_pics', 'public');
-            $data['profile_pic_path'] = $filePath;
+            $filePath = $request->file('profile_pic_path')->store('profile', 'public');
+
+            if ($filePath) {
+                Storage::disk('profile')->delete($user->profile_pic_path);
+                $data['profile_pic_path'] = $filePath;
+            }
         }
 
         $user->update($data);
