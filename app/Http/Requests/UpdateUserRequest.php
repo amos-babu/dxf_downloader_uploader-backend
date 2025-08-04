@@ -22,11 +22,13 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => 'nullable|string|max:255',
-            'username' => 'nullable|string|max:255|unique:users,username' . Auth::id(),
-            'bio' => 'nullable|string|max:255',
-            'profile_pic_path' => 'nullable|file|mimes:jpeg,png,jpg|max:2048'
-        ];
+            return [
+                'name' => ['nullable', 'string', 'max:255'],
+                'username' => ['nullable', 'string', 'max:255', 'unique:users,username' . Auth::id()],
+                'bio' => ['nullable', 'string', 'max:255'],
+                'profile_pic_path' => ['nullable', 'image', 'max:2048']
+            ];
+
+
     }
 }

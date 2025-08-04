@@ -22,10 +22,10 @@ class UploadFileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'dxf_path' => 'required|file|max:2048',
-            'picture_path' => 'required|image|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'title' => ['required','string','max:255'],
+            'description' => ['nullable','string','max:255'],
+            'dxf_path' => ['required','file','max:2048'],
+            'picture_path' => ['required','image','file','mimes:jpeg,png,jpg,gif,svg','max:2048'],
         ];
     }
 }

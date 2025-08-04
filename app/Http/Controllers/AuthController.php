@@ -82,8 +82,7 @@ class AuthController extends Controller
         // Update user details
         $data = $request->validated();
 
-        dd($data);
-
+        // dd($data);
         // Handle profile image upload
         if ($request->hasFile('profile_pic_path')) {
             $filePath = $request->file('profile_pic_path')->store('profile_pics', 'public');
