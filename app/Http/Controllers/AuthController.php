@@ -75,9 +75,10 @@ class AuthController extends Controller
     }
 
     // Update user credentials
-    public function updateUserProfile(UpdateUserRequest $request)
+    public function updateUserProfile(Request $request)
     {
-        $user = User::find(Auth::id());
+        dd($request->all());
+        $user = User::find(id: Auth::id());
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
@@ -86,13 +87,13 @@ class AuthController extends Controller
         // Update user details
         $data = $request->validated();
 
-        // dd($user);
+        // dd($data);
         // Handle profile image upload
         if ($request->hasFile('profile_pic_path')) {
             $filePath = $request->file('profile_pic_path')->store('profile', 'public');
 
             if ($filePath) {
-                Storage::disk('profile')->delete($user->profile_pic_path);
+                Storage::disk('public')->delete($user->profile_pic_path);
                 $data['profile_pic_path'] = $filePath;
             }
         }
