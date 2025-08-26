@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -28,8 +29,8 @@ class UpdateUserRequest extends FormRequest
                     'nullable',
                     'string',
                     'max:255',
-                    // Rule::uniqu
-                    'unique:users,username' . Auth::id()],
+                    Rule::unique('users', 'username')->ignore(Auth::id())],
+                    // 'unique:users,username' . Auth::id()],
                 'bio' => ['nullable', 'string', 'max:255'],
                 'profile_pic_path' => ['nullable', 'image', 'max:2048']
             ];
